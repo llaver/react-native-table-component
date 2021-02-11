@@ -10,18 +10,31 @@ interface IColOptions {
 	heightArr?: number[];
 	flex?: number;
 	textStyle?: TextStyle;
+	cellStyle?: (item: string | JSX.Element, index: number) => ViewStyle;
+	cellBorderStyle?: (item: string | JSX.Element, index: number) => ViewStyle;
 }
 
 export class Col extends Component<IColOptions> {
 
 	public render() {
-		const { data, style, width, heightArr, flex, textStyle, ...props } = this.props;
+		const { data, style, width, heightArr, flex, textStyle, cellStyle, cellBorderStyle, ...props } = this.props;
 
 		return data ? (
 			<View style={[width ? { width } : { flex: 1 }, flex ? { flex } : {}, style]}>
 				{[...data].map((item, i) => {
 					const height = heightArr && heightArr[i];
-					return <Cell key={i} data={item} width={width} height={height} textStyle={textStyle} {...props} />;
+					return (
+						<Cell
+							key={i}
+							data={item}
+							width={width}
+							height={height}
+							textStyle={textStyle}
+							style={cellStyle && cellStyle(item, i)}
+							borderStyle={cellBorderStyle && cellBorderStyle(item, i)}
+							{...props}
+						/>
+					);
 				})}
 			</View>
 		) : null;

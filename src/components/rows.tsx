@@ -10,24 +10,39 @@ interface IRowOptions {
 	height?: number;
 	flexArr?: number[];
 	textStyle?: TextStyle;
+	cellStyle?: (item: string | JSX.Element, index: number) => ViewStyle;
+	cellBorderStyle?: (item: string | JSX.Element, index: number) => ViewStyle;
 }
 
 export class Row extends Component<IRowOptions> {
 
 	public render() {
-		const { data, style, widthArr, height, flexArr, textStyle, ...props } = this.props;
+		const { data, style, widthArr, height, flexArr, textStyle, cellStyle, cellBorderStyle, ...props } = this.props;
 		const width = widthArr ? sum(widthArr) : 0;
 
 		return data ? (
 			<View style={[
 				height ? { height } : {},
 				width ? { width } : {},
-				styles.row, style
+				styles.row,
+				style
 			]}>
 				{[...data].map((item, i) => {
 					const flex = flexArr && flexArr[i];
 					const wth = widthArr && widthArr[i];
-					return <Cell key={i} data={item} width={wth} height={height} flex={flex} textStyle={textStyle} {...props} />;
+					return (
+						<Cell
+							key={i}
+							data={item}
+							width={wth}
+							height={height}
+							flex={flex}
+							textStyle={textStyle}
+							style={cellStyle && cellStyle(item, i)}
+							borderStyle={cellBorderStyle && cellBorderStyle(item, i)}
+							{...props}
+						/>
+					);
 				})}
 			</View>
 		) : null;
